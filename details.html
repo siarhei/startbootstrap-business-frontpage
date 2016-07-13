@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Presales Cloud 67</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/heroic-features.css" rel="stylesheet">
+    <link href="css/presales.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="index.html">PreSales</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <header id="instance_info" class="jumbotron hero-spacer">
+            <script id="instance_template" type="text/x-handlebars-template">
+                <h1>{{name}}</h1>
+                <p>{{description}}</p>
+                <!--<p><a class="btn btn-primary btn-large">Call to action!</a></p>-->
+            </script>
+        </header>
+
+        <hr>
+
+        <!-- Title -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Applications</h3>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <!-- Page Features -->
+        <div id="container" class="row text-center">
+            <script id="app_template" type="text/x-handlebars-template">
+                {{#applications}}
+                    <div class="col-md-3 col-sm-6 hero-feature">
+                        <div class="caption">
+                            <p>{{name}}</p>
+                            <p>
+                                <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
+                            <div>
+                                <a class="app_link" href="http://{{host}}:{{port}}/{{ctx}}">version</a>
+                                <!--<input type="hidden" name="eis.demo.app:type=Info" value="http://localhost:9001/jolokia"/>-->
+                            </div>
+                            </p>
+                        </div>
+                        <div class="thumbnail">
+                            <img src="img/app/cloud67_app_800x500.jpg" alt="">
+                        </div>
+                    </div>
+                {{/applications}}
+            </script>
+
+        </div>
+        <!-- /.row -->
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; EIS Group Belarus 2016</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery (1.11.1)-->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!--Jolokia (1.3.3)-->
+    <script src="js/json2.js"></script>
+    <script src="js/jolokia.js"></script>
+
+    <!--Handlebars (4.0.5) JS Template Engine-->
+    <script src="js/handlebars-v4.0.5.js"></script>
+
+    <!--Presales-->
+    <script src="js/presales.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //selected instance index
+            var instanceIdx = Utils.retrieveInstanceIdx();
+
+            Utils.loadInstanceDetails(instanceIdx, function (info) {
+                //instance header
+                var inst_source = $('#instance_template').html();
+                var inst_template = Handlebars.compile(inst_source);
+                var inst_html    = inst_template(info);
+                $('#instance_info').html(inst_html);
+
+                //instance apps
+                var app_source = $('#app_template').html();
+                var app_template = Handlebars.compile(app_source);
+                var app_html    = app_template(info);
+                $('#container').html(app_html);
+
+                var app_infos = info['applications'];
+                //adding ajax polling every 30s by default (see Jolokia#start)
+                $('a.app_link').each(function (idx , el) {
+
+                    var app_info = app_infos[idx];
+                    var jmxObject = app_info.jmx.object;
+
+                    var j4p = new Jolokia('http://' + app_info.host + ':' + app_info.jmx.port + '/jolokia');
+                    var j4p_request = { type: "read", mbean: jmxObject, attribute: "AppInfo", timeout: 5000, method: "get", jsonp: "true", config: { ignoreErrors: true }};
+                    var j4p_callback = {
+                        success: function(response) {
+                            var title = response.value.name + " (" + response.value.version + ")";
+                            if (response && 'ONLINE' === response.value.status) {
+                                Utils.setupStatus(el, 'online', title);
+                            } else {
+                                //app context is being initialized
+                                //it means the application will be available in several minutes
+                                Utils.setupStatus(el, 'starting', title);
+                            }
+                        },
+                        error: function(response) {
+                            console.log("error");
+                            Utils.setupStatus(el, 'offline', 'Offline');
+                        },
+                        ajaxError: function(jqxhr, status, errorMsg) {
+                            console.log("ajaxError");
+                            Utils.setupStatus(el, 'offline', 'Offline');
+                        },
+                        ajaxComplete: function (jqxhr, textStatus) {
+                            if ('error' === jqxhr.statusText) {
+                                Utils.setupStatus(el, 'offline', 'Offline');
+                            }
+                            console.log('ajaxComplete with status: ' + jqxhr.statusText);
+                        }
+                    };
+
+                    //make an immediate request
+                    j4p.request(j4p_request, j4p_callback);
+
+                    //and schedule long polling every 30s
+                    j4p.register(j4p_callback, j4p_request);
+                    j4p.start(10000);
+                 });
+            });
+        });
+    </script>
+</body>
+</html>

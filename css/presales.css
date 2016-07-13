@@ -1,0 +1,23 @@
+.app_link {
+
+}
+
+.online {
+    background-color: green;
+}
+
+.offline {
+    background-color: red;
+}
+
+.starting{
+    background-color: yellow;
+}
+
+div.online a.app_link {
+    color: white;
+}
+
+div.offline a.app_link {
+    color: black;
+}

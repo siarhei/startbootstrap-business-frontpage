@@ -1,0 +1,165 @@
+{
+  "instances": [
+    {
+      "name": "Local environment",
+      "description": "This is a short description about this local instance",
+      "address": {
+        "internal": {
+          "ip": "127.0.0.1",
+          "dns": "localhost"
+        },
+        "external": {
+          "ip": "192.168.164.79"
+        }
+      },
+      "nodes": [
+        {
+          "id": "1",
+          "applications": [
+            {
+              "name": "Main App",
+              "port": "8081",
+              "ctx": "eis-demo",
+              "jmx": {
+                "port": "9001",
+                "object": "eis.demo.app:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "applications": [
+            {
+              "name": "Reports",
+              "port": "8082",
+              "ctx": "eis-demo-reports",
+              "jmx": {
+                "port": "9002",
+                "object": "eis.demo.reports:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "applications": [
+            {
+              "name": "Operational Reports",
+              "port": "8083",
+              "ctx": "eis-demo-operational-reports",
+              "jmx": {
+                "port": "9003",
+                "object": "eis.demo.operational:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "4",
+          "applications": [
+            {
+              "name": "Webstudio",
+              "port": "8084",
+              "ctx": "eis-demo-webstudio",
+              "jmx": {
+                "port": "9004",
+                "object": "eis.demo.webstudio:type=Info"
+              }
+            },
+            {
+              "name": "Rating",
+              "port": "8084",
+              "ctx": "eis-demo-rate",
+              "jmx": {
+                "port": "9004",
+                "object": "eis.demo.rating:type=Info"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cloud 67",
+      "description": "New empty VM, which was provided based on the request in JIRA ticket EISHELP-9299.",
+      "address": {
+        "internal": {
+          "ip": "10.23.2.67",
+          "dns": "eis-demo-all01.eqxdev.exigengroup.com"
+        },
+        "external": {
+          "ip": "209.44.73.70 ",
+          "dns": "eis-demo-all01.stage.exigengroup.com"
+        }
+      },
+      "nodes": [
+        {
+          "id": "1",
+          "applications": [
+            {
+              "name": "Main App",
+              "port": "8081",
+              "ctx": "eis-demo",
+              "jmx": {
+                "port": "9001",
+                "object": "eis.demo.app:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "applications": [
+            {
+              "name": "Reports",
+              "port": "8082",
+              "ctx": "eis-demo-reports",
+              "jmx": {
+                "port": "9002",
+                "object": "eis.demo.reports:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "applications": [
+            {
+              "name": "Operational Reports",
+              "port": "8083",
+              "ctx": "eis-demo-operational-reports",
+              "jmx": {
+                "port": "9003",
+                "object": "eis.demo.operational:type=Info"
+              }
+            }
+          ]
+        },
+        {
+          "id": "4",
+          "applications": [
+            {
+              "name": "Webstudio",
+              "port": "8084",
+              "ctx": "eis-demo-webstudio",
+              "jmx": {
+                "port": "9004",
+                "object": "eis.demo.webstudio:type=Info"
+              }
+            },
+            {
+              "name": "Rating",
+              "port": "8084",
+              "ctx": "eis-demo-rate",
+              "jmx": {
+                "port": "9004",
+                "object": "eis.demo.rate:type=Info"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
